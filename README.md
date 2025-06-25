@@ -24,7 +24,7 @@ Once your Swift package is set up, add Flash as a dependency to the `dependencie
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/nixzhu/Flash.git", from: "0.1.0"),
+    .package(url: "https://github.com/nixzhu/Flash.git", from: "0.2.0"),
 ]
 ```
 
