@@ -183,6 +183,78 @@ extension FlashRequest {
         )
     }
 
+    /// Creates a PUT request.
+    /// - Parameters:
+    ///   - scheme: The scheme (default is `https`).
+    ///   - host: The host.
+    ///   - path: The path.
+    ///   - queries: The query dictionary (default is `[:]`).
+    ///   - headerFields: The array of header fields (default is `[]`).
+    ///   - jsonBody: The JSON body dictionary (optional, default is `nil`).
+    ///   - timeoutInterval: The timeout interval in seconds (default is `15`).
+    ///   - retryPolicy: The retry policy (default is `nil`).
+    /// - Returns: A `FlashRequest` instance.
+    public static func put(
+        scheme: String = "https",
+        host: String,
+        path: String,
+        queries: QueryDictionary = [:],
+        headerFields: [FlashHeaderField] = [],
+        jsonBody: JSONBodyDictionary? = nil,
+        timeoutInterval: TimeInterval = 15,
+        retryPolicy: RetryPolicy? = nil
+    ) throws -> Self {
+        try .init(
+            method: .put,
+            scheme: scheme,
+            host: host,
+            path: path,
+            queries: queries,
+            headerFields: headerFields + [
+                .init(name: "Content-Type", value: "application/json"),
+            ],
+            body: jsonBody.flatMap { try JSONSerialization.data(withJSONObject: $0.dictionary) },
+            timeoutInterval: timeoutInterval,
+            retryPolicy: retryPolicy
+        )
+    }
+
+    /// Creates a PUT request.
+    /// - Parameters:
+    ///   - scheme: The scheme (default is `https`).
+    ///   - host: The host.
+    ///   - path: The path.
+    ///   - queries: The query dictionary (default is `[:]`).
+    ///   - headerFields: The array of header fields (default is `[]`).
+    ///   - jsonBody: The JSON body array (optional, default is `nil`).
+    ///   - timeoutInterval: The timeout interval in seconds (default is `15`).
+    ///   - retryPolicy: The retry policy (default is `nil`).
+    /// - Returns: A `FlashRequest` instance.
+    public static func put(
+        scheme: String = "https",
+        host: String,
+        path: String,
+        queries: QueryDictionary = [:],
+        headerFields: [FlashHeaderField] = [],
+        jsonBody: JSONBodyArray? = nil,
+        timeoutInterval: TimeInterval = 15,
+        retryPolicy: RetryPolicy? = nil
+    ) throws -> Self {
+        try .init(
+            method: .put,
+            scheme: scheme,
+            host: host,
+            path: path,
+            queries: queries,
+            headerFields: headerFields + [
+                .init(name: "Content-Type", value: "application/json"),
+            ],
+            body: jsonBody.flatMap { try JSONSerialization.data(withJSONObject: $0.array) },
+            timeoutInterval: timeoutInterval,
+            retryPolicy: retryPolicy
+        )
+    }
+
     /// Creates a PATCH request.
     /// - Parameters:
     ///   - scheme: The scheme (default is `https`).
@@ -296,6 +368,9 @@ extension FlashRequest {
 
         /// POST
         case post = "POST"
+
+        /// PUT
+        case put = "PUT"
 
         /// PATCH
         case patch = "PATCH"
@@ -478,7 +553,7 @@ extension FlashRequest {
             switch method {
             case .get, .delete:
                 assert(body == nil)
-            case .post, .patch:
+            case .post, .patch, .put:
                 urlRequest.httpBody = body
             }
 
