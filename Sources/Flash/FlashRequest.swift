@@ -254,6 +254,38 @@ extension FlashRequest {
             retryPolicy: retryPolicy
         )
     }
+
+    /// Creates a DELETE request.
+    /// - Parameters:
+    ///   - scheme: The scheme (default is `https`).
+    ///   - host: The host.
+    ///   - path: The path.
+    ///   - queries: The query dictionary (default is `[:]`).
+    ///   - headerFields: The array of header fields (default is `[]`).
+    ///   - timeoutInterval: The timeout interval in seconds (default is `15`).
+    ///   - retryPolicy: The retry policy (default is `nil`).
+    /// - Returns: A `FlashRequest` instance.
+    public static func delete(
+        scheme: String = "https",
+        host: String,
+        path: String,
+        queries: QueryDictionary = [:],
+        headerFields: [FlashHeaderField] = [],
+        timeoutInterval: TimeInterval = 15,
+        retryPolicy: RetryPolicy? = nil
+    ) -> Self {
+        .init(
+            method: .delete,
+            scheme: scheme,
+            host: host,
+            path: path,
+            queries: queries,
+            headerFields: headerFields,
+            body: nil,
+            timeoutInterval: timeoutInterval,
+            retryPolicy: retryPolicy
+        )
+    }
 }
 
 extension FlashRequest {
@@ -267,6 +299,9 @@ extension FlashRequest {
 
         /// PATCH
         case patch = "PATCH"
+
+        /// DELETE
+        case delete = "DELETE"
     }
 }
 
@@ -441,7 +476,7 @@ extension FlashRequest {
             }
 
             switch method {
-            case .get:
+            case .get, .delete:
                 assert(body == nil)
             case .post, .patch:
                 urlRequest.httpBody = body

@@ -12,7 +12,7 @@ A modern, Swift-native HTTP client library with middleware support and built-in 
 - 🔄 **Retry Policies**: Built-in support for fixed delay and exponential backoff retry strategies
 - 📝 **Type-Safe**: Strongly-typed request builders with compile-time safety
 - 🎯 **Lightweight**: Minimal dependencies, built on top of `URLSession`
-- 🔍 **Flexible**: Support for GET, POST and PATCH requests with JSON body handling
+- 🔍 **Flexible**: Support for GET, POST, PATCH and DELETE requests with JSON body handling
 
 ## Installation
 
