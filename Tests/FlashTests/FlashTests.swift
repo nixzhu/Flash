@@ -18,6 +18,14 @@ struct HeaderMiddleware: FlashMiddleware {
 
         return request
     }
+
+    func interceptResponse(
+        _ response: FlashResponse,
+        retry: () async throws -> FlashResponse
+    ) async throws -> FlashResponse {
+        print(response.request.path, String(data: response.body, encoding: .utf8) ?? "")
+        return response
+    }
 }
 
 extension FlashClient {
@@ -34,7 +42,11 @@ extension FlashClient {
 @Test func get() async throws {
     let request = FlashRequest.get(
         host: "httpbin.org",
-        path: "/get"
+        path: "/get",
+        queries: [
+            "a": 42,
+            "b": "OK",
+        ]
     )
 
     let response = try await FlashClient.test.send(request)
@@ -42,10 +54,14 @@ extension FlashClient {
 
     struct Output: Decodable {
         let headers: [String: String]
+        let args: [String: String]
     }
 
     let output = try JSONDecoder().decode(Output.self, from: response.body)
+    #expect(output.headers["Content-Type"] == nil)
     #expect(output.headers["X-Tester"] == "Nix")
+    #expect(output.args["a"] == "42")
+    #expect(output.args["b"] == "OK")
 }
 
 @Test func post() async throws {
@@ -75,6 +91,7 @@ extension FlashClient {
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
         #expect(output.json.name == "Nix")
         #expect(output.json.age == 18)
@@ -85,6 +102,10 @@ extension FlashClient {
         let request = try FlashRequest.post(
             host: "httpbin.org",
             path: "/post",
+            queries: [
+                "a": 42,
+                "b": "OK",
+            ],
             jsonBody: [
                 [
                     "name": "Alice",
@@ -107,11 +128,15 @@ extension FlashClient {
             }
 
             let headers: [String: String]
+            let args: [String: String]
             let json: [JSON]
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
+        #expect(output.args["a"] == "42")
+        #expect(output.args["b"] == "OK")
         #expect(output.json[0].name == "Alice")
         #expect(output.json[0].age == 28)
         #expect(output.json[1].name == "Bob")
@@ -124,6 +149,10 @@ extension FlashClient {
         let request = try FlashRequest.put(
             host: "httpbin.org",
             path: "/put",
+            queries: [
+                "a": 42,
+                "b": "OK",
+            ],
             jsonBody: [
                 "name": "Nix",
                 "age": 38,
@@ -142,11 +171,15 @@ extension FlashClient {
             }
 
             let headers: [String: String]
+            let args: [String: String]
             let json: JSON
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
+        #expect(output.args["a"] == "42")
+        #expect(output.args["b"] == "OK")
         #expect(output.json.name == "Nix")
         #expect(output.json.age == 38)
         #expect(output.json.planet == "Earth")
@@ -182,6 +215,7 @@ extension FlashClient {
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
         #expect(output.json[0].name == "Alice")
         #expect(output.json[0].age == 28)
@@ -213,6 +247,7 @@ extension FlashClient {
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
         #expect(output.json.planet == "Earth")
     }
@@ -244,6 +279,7 @@ extension FlashClient {
         }
 
         let output = try JSONDecoder().decode(Output.self, from: response.body)
+        #expect(output.headers["Content-Type"] == "application/json")
         #expect(output.headers["X-Tester"] == "Nix")
         #expect(output.json[0].planet == "Earth")
         #expect(output.json[1].planet == "Mars")
