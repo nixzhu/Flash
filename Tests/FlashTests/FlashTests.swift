@@ -20,22 +20,24 @@ struct HeaderMiddleware: FlashMiddleware {
     }
 }
 
-@Test func get() async throws {
-    let client = FlashClient(
+extension FlashClient {
+    static let test = FlashClient(
         middlewares: [
             HeaderMiddleware(
                 name: "X-Tester",
                 value: "Nix"
-            )
+            ),
         ]
     )
+}
 
+@Test func get() async throws {
     let request = FlashRequest.get(
         host: "httpbin.org",
         path: "/get"
     )
 
-    let response = try await client.send(request)
+    let response = try await FlashClient.test.send(request)
     #expect(response.statusCode == 200)
 
     struct Output: Decodable {
@@ -47,15 +49,6 @@ struct HeaderMiddleware: FlashMiddleware {
 }
 
 @Test func post() async throws {
-    let client = FlashClient(
-        middlewares: [
-            HeaderMiddleware(
-                name: "X-Tester",
-                value: "Nix"
-            ),
-        ]
-    )
-
     do {
         let request = try FlashRequest.post(
             host: "httpbin.org",
@@ -67,7 +60,7 @@ struct HeaderMiddleware: FlashMiddleware {
             ]
         )
 
-        let response = try await client.send(request)
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -104,7 +97,7 @@ struct HeaderMiddleware: FlashMiddleware {
             ]
         )
 
-        let response = try await client.send(request)
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -127,15 +120,6 @@ struct HeaderMiddleware: FlashMiddleware {
 }
 
 @Test func put() async throws {
-    let client = FlashClient(
-        middlewares: [
-            HeaderMiddleware(
-                name: "X-Tester",
-                value: "Nix"
-            ),
-        ]
-    )
-
     do {
         let request = try FlashRequest.put(
             host: "httpbin.org",
@@ -146,7 +130,8 @@ struct HeaderMiddleware: FlashMiddleware {
                 "planet": "Earth",
             ]
         )
-        let response = try await client.send(request)
+
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -183,7 +168,7 @@ struct HeaderMiddleware: FlashMiddleware {
             ]
         )
 
-        let response = try await client.send(request)
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -206,25 +191,16 @@ struct HeaderMiddleware: FlashMiddleware {
 }
 
 @Test func patch() async throws {
-    let client = FlashClient(
-        middlewares: [
-            HeaderMiddleware(
-                name: "X-Tester",
-                value: "Nix"
-            ),
-        ]
-    )
-
     do {
         let request = try FlashRequest.patch(
             host: "httpbin.org",
             path: "/patch",
             jsonBody: [
-                "planet": "Earth"
+                "planet": "Earth",
             ]
         )
 
-        let response = try await client.send(request)
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -247,15 +223,15 @@ struct HeaderMiddleware: FlashMiddleware {
             path: "/patch",
             jsonBody: [
                 [
-                    "planet": "Earth"
+                    "planet": "Earth",
                 ],
                 [
-                    "planet": "Mars"
+                    "planet": "Mars",
                 ],
             ]
         )
 
-        let response = try await client.send(request)
+        let response = try await FlashClient.test.send(request)
         #expect(response.statusCode == 200)
 
         struct Output: Decodable {
@@ -275,13 +251,11 @@ struct HeaderMiddleware: FlashMiddleware {
 }
 
 @Test func delete() async throws {
-    let client = FlashClient()
-
     let request = FlashRequest.delete(
         host: "httpbin.org",
         path: "/delete"
     )
 
-    let response = try await client.send(request)
+    let response = try await FlashClient.test.send(request)
     #expect(response.statusCode == 200)
 }
